@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Mari Home Mari Ong – Lucky Draw</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ░░ BACKGROUND ░░ -->
+  <div class="bg-blur"></div>
+
+  <!-- ░░ SCREEN 1 – START ░░ -->
+  <section id="screen-start" class="screen active">
+    <button class="btn btn--white" id="btn-start">START</button>
+  </section>
+
+  <!-- ░░ SCREEN 2 – GUIDE ░░ -->
+  <section id="screen-guide" class="screen">
+    <div class="hand-icon">
+      <div class="hand-circle">
+        <span class="hand-emoji">👆</span>
+      </div>
+    </div>
+    <button class="btn btn--blue" id="btn-ready">I'M READY</button>
+  </section>
+
+  <!-- ░░ SCREEN 3 – SHUFFLE ░░ -->
+  <section id="screen-shuffle" class="screen">
+    <div class="screen-logo">
+      <img src="images/logo_dark.webp" alt="iProperty" onerror="this.style.display='none'" />
+    </div>
+    <div class="carousel-viewport" id="carousel-viewport">
+      <div class="carousel-inner">
+        <div class="carousel-card" id="carousel-card">
+          <div class="carousel-img-wrap" id="carousel-img-wrap"></div>
+          <p class="carousel-name" id="carousel-name"></p>
+        </div>
+      </div>
+    </div>
+    <p class="shuffle-hint" id="shuffle-hint">Tap to stop the shuffle</p>
+  </section>
+
+  <!-- ░░ SCREEN 4 – RESULT ░░ -->
+  <section id="screen-result" class="screen">
+    <div id="confetti-container" class="confetti-container"></div>
+    <img class="screen-header-logo" src="images/logo_dark.webp" alt="iProperty" onerror="this.style.display='none'" />
+    <div class="result-card" id="result-card">
+      <img id="result-img" src="" alt="" class="result-prize-img" />
+      <p id="result-name" class="result-prize-name"></p>
+    </div>
+    <button class="btn btn--blue btn--wide" id="btn-continue">CONTINUE</button>
+  </section>
+
+  <!-- ░░ SCREEN 5 – QR ░░ -->
+  <section id="screen-qr" class="screen">
+    <img class="screen-header-logo" src="images/logo_dark.webp" alt="iProperty" onerror="this.style.display='none'" />
+    <div class="qr-card">
+      <p class="qr-instruction">Scan this QR<br/>to claim your prize.</p>
+      <div class="qr-box">
+        <img id="qr-image" src="" alt="QR Code" onerror="this.style.display='none'" />
+        <canvas id="qr-canvas"></canvas>
+      </div>
+      <button class="btn btn--blue btn--sm" id="btn-redraw">REDRAW</button>
+    </div>
+    <button class="btn btn--blue btn--wide" id="btn-finish">FINISH</button>
+  </section>
+
+  <!-- ░░ COUNTDOWN OVERLAY ░░ -->
+  <div id="countdown-overlay" class="countdown-overlay hidden">
+    <span class="countdown-number" id="countdown-number">3</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+/* ============================================================
+   BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:       #1A6CF5;
+  --blue-dark:  #1358CC;
+  --blue-light: #E8F0FF;
+  --white:      #FFFFFF;
+  --text-dark:  #1A1A2E;
+  --text-mid:   #4A5568;
+  --shadow:     0 8px 32px rgba(0,0,0,0.18);
+  --radius:     20px;
+  --transition: 0.45s cubic-bezier(.4,0,.2,1);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #D0D8E8;
+  overflow: hidden;
+}
+
+/* Blurred background */
+.bg-blur {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 110%, #b8c6d6 0%, transparent 60%),
+    radial-gradient(ellipse at 80% -10%,  #c8d4e4 0%, transparent 60%),
+    #D0D8E8;
+  z-index: 0;
+}
+
+/* ============================================================
+   SCREENS  –  each is a fixed full-viewport layer
+============================================================ */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition);
+  transform: translateY(28px);
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.screen.exit {
+  opacity: 0;
+  transform: translateY(-28px);
+}
+
+/* ============================================================
+   LOGO
+============================================================ */
+.logo { margin-bottom: 12px; flex-shrink: 0; }
+.logo-img { height: 34px; object-fit: contain; }
+
+.logo-svg-fallback {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--white);
+}
+
+/* ============================================================
+   SCREEN 1 – START  (fills entire viewport)
+============================================================ */
+#screen-start {
+  padding: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: clamp(40px, 8vh, 72px);
+  background: url('images/start.webp') center center / cover no-repeat;
+}
+
+.start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
+.title-main {
+  font-size: clamp(40px, 13vw, 76px);
+  font-weight: 900;
+  font-style: italic;
+  text-align: center;
+  line-height: 1.0;
+  color: var(--white);
+  /* outline / cartoon stroke */
+  -webkit-text-stroke: 3px #1a3a9f;
+  paint-order: stroke fill;
+  text-shadow:
+    3px  3px 0 #1a3a9f,
+   -3px -3px 0 #1a3a9f,
+    3px -3px 0 #1a3a9f,
+   -3px  3px 0 #1a3a9f;
+  flex-shrink: 0;
+}
+
+.giftbox {
+  width: min(360px, 80vw);
+  height: min(360px, 80vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.giftbox img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: giftFloat 3s ease-in-out infinite;
+}
+
+.giftbox-fallback {
+  font-size: min(130px, 32vw);
+  line-height: 1;
+  animation: giftFloat 3s ease-in-out infinite;
+}
+
+.giftbox img:not([src=""]) ~ .giftbox-fallback { display: none; }
+.giftbox img[src=""] { display: none; }
+
+@keyframes giftFloat {
+  0%, 100% { transform: translateY(0)    scale(1);    }
+  50%       { transform: translateY(-14px) scale(1.04); }
+}
+
+/* ============================================================
+   SCREEN 2 – GUIDE  (fills entire viewport)
+============================================================ */
+#screen-guide {
+  padding: 0 0 clamp(40px, 8vh, 72px);
+  align-items: center;
+  justify-content: flex-end;
+  gap: 40px;
+  background: url('images/guide.webp') center center / cover no-repeat;
+}
+
+.hand-icon {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hand-circle {
+  width: min(160px, 40vw);
+  height: min(160px, 40vw);
+  border-radius: 50%;
+  border: 3px solid #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: handPulse 1.8s ease-in-out infinite;
+  position: relative;
+}
+
+.hand-circle::before {
+  content: '';
+  position: absolute;
+  inset: -13px;
+  border-radius: 50%;
+  border: 2px dashed #aaa;
+  animation: spinSlow 8s linear infinite;
+}
+
+.hand-emoji {
+  font-size: min(72px, 18vw);
+  animation: handTap 1.8s ease-in-out infinite;
+  display: block;
+}
+
+@keyframes handPulse { 0%,100% { transform: scale(1);    } 50% { transform: scale(1.07); } }
+@keyframes handTap   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+@keyframes spinSlow  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-block;
+  padding: 20px 56px;
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.btn:active  { transform: scale(0.96) !important; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--white {
+  background: var(--white);
+  color: var(--blue);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.btn--white:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.26); }
+
+.btn--blue {
+  background: var(--blue);
+  color: var(--white);
+  box-shadow: 0 4px 18px rgba(26,108,245,0.45);
+}
+.btn--blue:hover { background: var(--blue-dark); transform: translateY(-2px); }
+
+/* full-width action button sitting below a card */
+.btn--wide {
+  width: calc(100% - 48px);
+  max-width: 480px;
+  margin: 0;
+  padding: 18px 0;
+  font-size: 17px;
+}
+
+.btn--sm { padding: 12px 32px; font-size: 14px; margin-top: 16px; }
+
+/* ============================================================
+   SCREEN TITLE  (shared by shuffle / result)
+============================================================ */
+.screen-title {
+  font-family: 'Segoe UI Black', 'Arial Black', sans-serif;
+  font-size: clamp(26px, 6.5vw, 42px);
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  padding: 48px 0 24px;
+  flex-shrink: 0;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.07);
+}
+
+/* ============================================================
+   SCREEN 3 – SHUFFLE  (carousel)
+============================================================ */
+#screen-shuffle {
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 32px;
+  background: url('images/draw.webp') center center / cover no-repeat;
+}
+
+/* Logo at top of shuffle screen */
+.screen-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.screen-logo img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* The outer white card — fixed, never moves */
+.carousel-viewport {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 340px;
+  padding: 28px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Clipping container: content slides inside here */
+.carousel-inner {
+  width: 100%;
+  position: relative;
+}
+
+/* The sliding panel that holds image + name */
+.carousel-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+.carousel-img-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f4f7ff;
+}
+
+.carousel-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.carousel-name {
+  font-size: clamp(16px, 4.5vw, 20px);
+  font-weight: 700;
+  text-align: center;
+  color: var(--blue);
+  line-height: 1.3;
+  width: 100%;
+}
+
+/* Slide-out to left */
+@keyframes slideOutLeft {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-48px); opacity: 0; }
+}
+/* Slide-in from right */
+@keyframes slideInRight {
+  from { transform: translateX(48px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+.carousel-card.slide-out { animation: slideOutLeft  0.13s ease-in  forwards; transition: none; }
+.carousel-card.slide-in  { animation: slideInRight  0.13s ease-out forwards; transition: none; }
+
+/* Fast-shuffle flash */
+.carousel-card           { transition: opacity 0.04s linear; }
+.carousel-card.flash-out { opacity: 0; }
+
+/* Winner glow on the outer viewport card */
+.carousel-viewport.winner {
+  border: 3px solid #FFD700;
+  box-shadow: 0 0 0 6px rgba(255,215,0,0.4), var(--shadow);
+  animation: winnerPop 0.55s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+@keyframes winnerPop {
+  0%   { transform: scale(1);    }
+  40%  { transform: scale(1.06); }
+  70%  { transform: scale(0.98); }
+  100% { transform: scale(1.03); }
+}
+
+.shuffle-hint {
+  flex-shrink: 0;
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: var(--text-mid);
+  letter-spacing: 0.5px;
+  animation: hintPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes hintPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* Logo header — outside card, top of screen */
+.screen-header-logo {
+  height: 36px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  z-index: 2;
+  position: relative;
+}
+
+/* ============================================================
+   SCREEN 4 – RESULT
+============================================================ */
+#screen-result {
+  justify-content: center;
+  gap: 24px;
+  padding: 48px 32px 40px;
+  background: #C8D3E8;
+}
+
+/* Confetti spans the whole screen */
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.confetti-piece {
+  position: absolute;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+  top: -10px;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(0)     rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+.result-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px 32px;
+  width: 100%;
+  max-width: 380px;
+  gap: 20px;
+  z-index: 2;
+  position: relative;
+}
+
+.result-prize-img {
+  width: min(260px, 70vw);
+  height: min(220px, 55vw);
+  object-fit: contain;
+  animation: bounceIn 0.6s cubic-bezier(.4,0,.2,1);
+}
+
+.result-prize-name {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 700;
+  color: var(--blue);
+  text-align: center;
+  line-height: 1.3;
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0.55); opacity: 0; }
+  60%  { transform: scale(1.1);  opacity: 1; }
+  100% { transform: scale(1);    }
+}
+
+/* ============================================================
+   SCREEN 5 – QR
+============================================================ */
+#screen-qr {
+  justify-content: center;
+  gap: 24px;
+  padding: 48px 32px 40px;
+  background: #C8D3E8;
+}
+
+.qr-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px 32px;
+  width: 100%;
+  max-width: 380px;
+  gap: 16px;
+}
+
+.qr-instruction {
+  font-size: clamp(16px, 4.2vw, 22px);
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.qr-box {
+  width: min(200px, 54vw);
+  height: min(200px, 54vw);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-box img,
+.qr-box canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ============================================================
+   RESPONSIVE TWEAKS
+============================================================ */
+
+@media (min-width: 700px) {
+  .carousel-viewport { max-width: 420px; }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .title-main  { font-size: 32px; }
+  .giftbox     { width: 200px; height: 200px; }
+  .hand-circle { width: 120px; height: 120px; }
+  .prize-grid  { gap: 10px; width: calc(100% - 24px); }
+}
+
+/* ============================================================
+   COUNTDOWN OVERLAY
+============================================================ */
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 30, 80, 0.82);
+  transition: opacity 0.25s ease;
+}
+
+.countdown-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.countdown-number {
+  font-size: clamp(120px, 30vw, 200px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+  text-shadow: 0 6px 32px rgba(0,0,0,0.5);
+  animation: countPop 0.4s cubic-bezier(.4,0,.2,1) both;
+}
+
+@keyframes countPop {
+  0%   { transform: scale(1.8); opacity: 0; }
+  60%  { transform: scale(0.9); }
+  100% { transform: scale(1);   opacity: 1; }
+}
