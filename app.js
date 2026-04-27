@@ -12,7 +12,7 @@ const CONFIG = {
   shuffleDuration:   3000,   // how long auto-shuffle runs before waiting for tap
   confettiCount:      60,
   qrBaseUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=',
-  qrClaimUrl: 'https://iproperty.com.my/claim?prize=',
+  qrClaimUrl: 'https://gurney.ipropertyevents.com/prize/',
 };
 
 /**
@@ -24,6 +24,7 @@ const CONFIG = {
 const prizes = [
   {
     id: 'aeon',
+    dbId: 1,
     name: 'AEON RM10 Gift Voucher',
     image: 'gift/AEON RM 10 Gift Voucher_2x.webp',
     emoji: '🛒',
@@ -32,6 +33,7 @@ const prizes = [
   },
   {
     id: 'br',
+    dbId: 2,
     name: 'Baskin Robbins Voucher',
     image: 'gift/Baskin Robbins Voucher_2x.webp',
     emoji: '🍦',
@@ -40,6 +42,7 @@ const prizes = [
   },
   {
     id: 'lanyard',
+    dbId: 8,
     name: 'iProperty Phone Lanyard',
     image: 'gift/iProperty  Phone Lanyard_2x.webp',
     emoji: '📱',
@@ -48,6 +51,7 @@ const prizes = [
   },
   {
     id: 'notebook',
+    dbId: 4,
     name: 'iProperty Notebook',
     image: 'gift/iProperty Notebook_2x.webp',
     emoji: '📓',
@@ -56,6 +60,7 @@ const prizes = [
   },
   {
     id: 'fan',
+    dbId: 3,
     name: 'Neck Fan',
     image: 'gift/Neck Fan_2x.webp',
     emoji: '💨',
@@ -64,6 +69,7 @@ const prizes = [
   },
   {
     id: 'kopi',
+    dbId: 5,
     name: 'Oriental Kopi RM10 Cash Voucher',
     image: 'gift/Oriental Kopi  RM 10 Cash Voucher_2x.webp',
     emoji: '☕',
@@ -72,6 +78,7 @@ const prizes = [
   },
   {
     id: 'texas',
+    dbId: 6,
     name: 'Texas Chicken RM5 Cash Voucher',
     image: 'gift/Texas Chicken RM 5 Cash Voucher_2x.webp',
     emoji: '🍗',
@@ -80,6 +87,7 @@ const prizes = [
   },
   {
     id: 'watsons',
+    dbId: 7,
     name: 'Watsons RM10 Gift Voucher',
     image: 'gift/Watsons RM 10 Gift Voucher _2x.webp',
     emoji: '🧴',
@@ -315,7 +323,8 @@ function spawnConfetti() {
 // QR SCREEN
 // ─────────────────────────────────────────────
 function showQR(prize) {
-  const claimUrl  = encodeURIComponent(`${CONFIG.qrClaimUrl}${prize.id}`);
+  const prizeUrl  = `${CONFIG.qrClaimUrl}${prize.dbId}`;
+  const claimUrl  = encodeURIComponent(prizeUrl);
   const qrSrc     = `${CONFIG.qrBaseUrl}${claimUrl}`;
 
   const qrImg     = $('qr-image');
@@ -328,7 +337,7 @@ function showQR(prize) {
   qrImg.onerror = () => {
     qrImg.style.display = 'none';
     qrCanvas.style.display = 'block';
-    drawCanvasQR(qrCanvas, `${CONFIG.qrClaimUrl}${prize.id}`);
+    drawCanvasQR(qrCanvas, prizeUrl);
   };
 
   showScreen('qr');
