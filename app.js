@@ -97,6 +97,38 @@ const prizes = [
 ];
 
 // ─────────────────────────────────────────────
+// ACTIVE PRIZES  (populated from API before each draw)
+// ─────────────────────────────────────────────
+let activePrizes = [...prizes];
+
+/**
+ * Fetch current stock levels and rebuild activePrizes,
+ * excluding any item with stock_level <= 0.
+ * Falls back to the full static prizes list on error.
+ */
+async function fetchStocks() {
+  try {
+    const res = await fetch('https://gurney.ipropertyevents.com/api/gifts/stocks', {
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (json.status !== 'success' || !Array.isArray(json.data)) throw new Error('Unexpected response');
+
+    const stockMap = {};
+    for (const item of json.data) {
+      stockMap[item.id] = parseInt(item.stock_level, 10) || 0;
+    }
+
+    const filtered = prizes.filter(p => (stockMap[p.dbId] ?? 0) > 0);
+    activePrizes = filtered.length > 0 ? filtered : [...prizes]; // fallback if all out of stock
+  } catch (err) {
+    console.warn('fetchStocks failed, using full prize list:', err);
+    activePrizes = [...prizes];
+  }
+}
+
+// ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
 const state = {
@@ -191,14 +223,11 @@ function slideToNext(onDone) {
 
 function startShuffle() {
   state.shuffleActive  = true;
-  state.canTap         = false;
+  state.canTap         = true;
   state.highlightIndex = 0;
 
   // Show first card immediately, no animation
-  setCarouselCard(prizes[0]);
-
-  // Allow tap after the auto-shuffle duration
-  setTimeout(() => { state.canTap = true; }, CONFIG.shuffleDuration);
+  setCarouselCard(activePrizes[0]);
 
   doFastStep();
 }
@@ -207,8 +236,8 @@ function startShuffle() {
 function doFastStep() {
   if (!state.shuffleActive) return;
 
-  state.highlightIndex = (state.highlightIndex + 1) % prizes.length;
-  const next = prizes[state.highlightIndex];
+  state.highlightIndex = (state.highlightIndex + 1) % activePrizes.length;
+  const next = activePrizes[state.highlightIndex];
   const card = $('carousel-card');
 
   card.classList.add('flash-out');
@@ -224,8 +253,9 @@ function stopShuffle() {
   state.shuffleActive = false;
   clearTimeout(state.shuffleTimer);
 
-  const winner      = pickWeightedRandom(prizes);
-  state.winnerPrize = winner;
+  // Fetch fresh stocks in parallel with the deceleration animation
+  // so the winner is always picked from up-to-date, in-stock prizes.
+  const stocksPromise = fetchStocks();
 
   // Deceleration: 4 slowing slides, then land on winner
   const delays  = [220, 360, 500, 650];
@@ -235,19 +265,25 @@ function stopShuffle() {
     if (step < delays.length) {
       const delay = delays[step++];
       state.shuffleTimer = setTimeout(() => {
-        state.highlightIndex = (state.highlightIndex + 1) % prizes.length;
-        slideToNext(() => setCarouselCard(prizes[state.highlightIndex]));
+        state.highlightIndex = (state.highlightIndex + 1) % activePrizes.length;
+        slideToNext(() => setCarouselCard(activePrizes[state.highlightIndex]));
         setTimeout(decelStep, SLIDE_MS * 2); // wait for slide to finish
       }, delay);
     } else {
-      // Land on winner
-      state.shuffleTimer = setTimeout(() => {
-        slideToNext(() => {
-          setCarouselCard(winner);
-          setTimeout(() => $('carousel-viewport').classList.add('winner'), SLIDE_MS + 20);
-        });
-        setTimeout(() => showResult(winner), SLIDE_MS * 2 + 800);
-      }, 400);
+      // Wait for fresh stock data before selecting winner so that
+      // prizes with 0 stock are never awarded.
+      stocksPromise.then(() => {
+        const winner      = pickWeightedRandom(activePrizes);
+        state.winnerPrize = winner;
+
+        state.shuffleTimer = setTimeout(() => {
+          slideToNext(() => {
+            setCarouselCard(winner);
+            setTimeout(() => $('carousel-viewport').classList.add('winner'), SLIDE_MS + 20);
+          });
+          setTimeout(() => showResult(winner), SLIDE_MS * 2 + 800);
+        }, 400);
+      });
     }
   }
 
@@ -255,7 +291,7 @@ function stopShuffle() {
 }
 
 function onCardTap() {
-  if (!state.canTap) return;
+  if (!state.shuffleActive) return;
   stopShuffle();
 }
 
@@ -453,13 +489,15 @@ function initEventListeners() {
   });
 
   $('btn-ready').addEventListener('click', () => {
-    startCountdown(3, () => {
-      showScreen('shuffle');
-      setTimeout(startShuffle, 300);
+    fetchStocks().then(() => {
+      startCountdown(3, () => {
+        showScreen('shuffle');
+        setTimeout(startShuffle, 300);
+      });
     });
   });
 
-  // Tap anywhere on shuffle screen (card or hint) to stop
+  // Tap the carousel card to stop the shuffle
   $('screen-shuffle').addEventListener('click', onCardTap);
 
   $('btn-continue').addEventListener('click', () => {
@@ -467,8 +505,10 @@ function initEventListeners() {
   });
 
   $('btn-redraw').addEventListener('click', () => {
-    showScreen('shuffle');
-    setTimeout(startShuffle, 300);
+    fetchStocks().then(() => {
+      showScreen('shuffle');
+      setTimeout(startShuffle, 300);
+    });
   });
 
   $('btn-finish').addEventListener('click', () => {

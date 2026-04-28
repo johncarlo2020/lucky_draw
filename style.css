@@ -149,7 +149,7 @@ html, body {
    SCREEN 2 – GUIDE  (fills entire viewport)
 ============================================================ */
 #screen-guide {
-  padding: 0 0 clamp(40px, 8vh, 72px);
+  padding: 0 0 clamp(200px, 35vh, 320px);
   align-items: center;
   justify-content: flex-end;
   gap: 40px;
