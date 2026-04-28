@@ -149,11 +149,22 @@ html, body {
    SCREEN 2 – GUIDE  (fills entire viewport)
 ============================================================ */
 #screen-guide {
-  padding: 0 0 clamp(200px, 35vh, 320px);
+  padding: 0;
   align-items: center;
-  justify-content: flex-end;
-  gap: 40px;
+  justify-content: center;
+  gap: 120px;
   background: url('images/guide.webp') center center / cover no-repeat;
+}
+
+#btn-ready {
+  position: static;
+  transform: none;
+  margin-top: 30px;
+}
+
+#screen-guide .hand-icon {
+  position: static;
+  flex: unset;
 }
 
 .hand-icon {

@@ -99,7 +99,8 @@ const prizes = [
 // ─────────────────────────────────────────────
 // ACTIVE PRIZES  (populated from API before each draw)
 // ─────────────────────────────────────────────
-let activePrizes = [...prizes];
+let activePrizes   = [...prizes]; // in-stock only – used for winner selection
+let displayPrizes  = [...prizes]; // all prizes – used for carousel display
 
 /**
  * Fetch current stock levels and rebuild activePrizes,
@@ -113,6 +114,7 @@ async function fetchStocks() {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
+    console.log('Fetched stocks:', json);
     if (json.status !== 'success' || !Array.isArray(json.data)) throw new Error('Unexpected response');
 
     const stockMap = {};
@@ -121,7 +123,8 @@ async function fetchStocks() {
     }
 
     const filtered = prizes.filter(p => (stockMap[p.dbId] ?? 0) > 0);
-    activePrizes = filtered.length > 0 ? filtered : [...prizes]; // fallback if all out of stock
+    activePrizes  = filtered.length > 0 ? filtered : [...prizes]; // fallback if all out of stock
+    displayPrizes = [...prizes]; // always show all prizes in the carousel
   } catch (err) {
     console.warn('fetchStocks failed, using full prize list:', err);
     activePrizes = [...prizes];
@@ -227,7 +230,7 @@ function startShuffle() {
   state.highlightIndex = 0;
 
   // Show first card immediately, no animation
-  setCarouselCard(activePrizes[0]);
+  setCarouselCard(displayPrizes[0]);
 
   doFastStep();
 }
@@ -236,8 +239,8 @@ function startShuffle() {
 function doFastStep() {
   if (!state.shuffleActive) return;
 
-  state.highlightIndex = (state.highlightIndex + 1) % activePrizes.length;
-  const next = activePrizes[state.highlightIndex];
+  state.highlightIndex = (state.highlightIndex + 1) % displayPrizes.length;
+  const next = displayPrizes[state.highlightIndex];
   const card = $('carousel-card');
 
   card.classList.add('flash-out');
@@ -265,8 +268,8 @@ function stopShuffle() {
     if (step < delays.length) {
       const delay = delays[step++];
       state.shuffleTimer = setTimeout(() => {
-        state.highlightIndex = (state.highlightIndex + 1) % activePrizes.length;
-        slideToNext(() => setCarouselCard(activePrizes[state.highlightIndex]));
+        state.highlightIndex = (state.highlightIndex + 1) % displayPrizes.length;
+        slideToNext(() => setCarouselCard(displayPrizes[state.highlightIndex]));
         setTimeout(decelStep, SLIDE_MS * 2); // wait for slide to finish
       }, delay);
     } else {
