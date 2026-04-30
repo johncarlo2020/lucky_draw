@@ -12,7 +12,7 @@ const CONFIG = {
   shuffleDuration:   3000,   // how long auto-shuffle runs before waiting for tap
   confettiCount:      60,
   qrBaseUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=',
-  qrClaimUrl: 'https://gurney.ipropertyevents.com/prize/',
+  qrClaimUrl: 'https://ioipuchong.ipropertyevents.com/prize/',
 };
 
 /**
