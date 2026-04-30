@@ -345,17 +345,17 @@ function spawnConfetti() {
     piece.style.cssText = `
       left: ${Math.random() * 100}%;
       background: ${colors[Math.floor(Math.random() * colors.length)]};
-      width: ${5 + Math.random() * 7}px;
-      height: ${5 + Math.random() * 7}px;
-      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-      animation-duration: ${0.8 + Math.random() * 1.4}s;
-      animation-delay: ${Math.random() * 0.6}s;
+      width: ${6 + Math.random() * 8}px;
+      height: ${12 + Math.random() * 8}px;
+      border-radius: 2px;
+      animation-duration: ${3 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 1.5}s;
     `;
     container.appendChild(piece);
   }
 
   // Clean up after animations
-  setTimeout(() => { container.innerHTML = ''; }, 3000);
+  setTimeout(() => { container.innerHTML = ''; }, 7000);
 }
 
 // ─────────────────────────────────────────────

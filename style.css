@@ -84,7 +84,7 @@ html, body {
   padding: 0;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: clamp(40px, 8vh, 72px);
+  padding-bottom: clamp(360px, calc(63vh + 160px), 1330px);
   background: url('images/start.webp') center center / cover no-repeat;
 }
 
@@ -151,20 +151,20 @@ html, body {
 #screen-guide {
   padding: 0;
   align-items: center;
-  justify-content: center;
-  gap: 120px;
+  justify-content: flex-start;
   background: url('images/guide.webp') center center / cover no-repeat;
 }
 
 #btn-ready {
   position: static;
   transform: none;
-  margin-top: 30px;
+  margin-top: clamp(120px, 22vh, 440px);
 }
 
 #screen-guide .hand-icon {
   position: static;
   flex: unset;
+  margin-top: clamp(150px, 28vh, 570px);
 }
 
 .hand-icon {
@@ -210,7 +210,7 @@ html, body {
 ============================================================ */
 .btn {
   display: inline-block;
-  padding: 20px 56px;
+  padding: 20px 146px;
   border: none;
   border-radius: 50px;
   font-size: 18px;
@@ -430,8 +430,11 @@ html, body {
 }
 
 @keyframes confettiFall {
-  0%   { transform: translateY(0)     rotate(0deg);   opacity: 1; }
-  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  0%   { transform: translateY(0)      translateX(0)     rotate(0deg);   opacity: 1; }
+  25%  { transform: translateY(25vh)   translateX(15px)  rotate(180deg); opacity: 1; }
+  50%  { transform: translateY(50vh)   translateX(-10px) rotate(360deg); opacity: 1; }
+  75%  { transform: translateY(75vh)   translateX(12px)  rotate(540deg); opacity: 0.8; }
+  100% { transform: translateY(110vh)  translateX(-8px)  rotate(720deg); opacity: 0; }
 }
 
 .result-card {
